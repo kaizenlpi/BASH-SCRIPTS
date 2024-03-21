@@ -5,8 +5,6 @@
 ### SECOND ---> RUN THIS SCRIPT
 ### THIS IS A SCRIPT TO DO THE MANUAL OPERATING SYSTEM WORK FOR LVM and FILE SYSTEM TO RECOGNIZE NEW DISK SIZE ### 
 
-#!/bin/bash
-
 ### PVS ### 
 echo "### SHOW PHYSICAL VOLUMES ###"
 disks=($(pvs | awk '{print $1}' | tail -n +3))
