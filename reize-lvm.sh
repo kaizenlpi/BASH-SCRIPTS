@@ -7,34 +7,34 @@
 
 ### PVS ### 
 echo "### SHOW PHYSICAL VOLUMES ###"
-disks=($(pvs | awk '{print $1}' | tail -n +3))
-for disk in "${disks[@]}"; do
-    echo "$disk";
+physical_volumes=($(pvs | awk '{print $1}' | tail -n +3))
+for volume in "${physical_volumes[@]}"; do
+    echo "$volume";
 done
 echo "### SHOW PHYSICAL VOLUMES ###"
 
 echo "### STRIP OFF PHYSICAL VOLUME PARTITION NUMBER 1 W/ SED FOR GROWPART ###"
-disks=($(pvs | awk '{print $1}' | tail -n +3 | sed 's/.$//'))
-for disk in "${disks[@]}"; do
-    echo "$disk";
+physical_volumes=($(pvs | awk '{print $1}' | tail -n +3 | sed 's/.$//'))
+for volume in "${physical_volumes[@]}"; do
+    echo "$volume";
 done
 echo "### STRIP OFF DEVICE PARTITION NUMBER 1 W/ SED FOR GROWPART ###"
 
 echo "### GROW PHYSICAL VOLUME PARTITION NUMBER 1 ###"
-for disk in "${disks[@]}"; do
-    growpart "$disk" 1;
+for volume in "${physical_volumes[@]}"; do
+    growpart "$volume" 1;
 done
 
 echo '##### RESIZING PHYSICAL VOLUMES #####'
-pvols=$(pvs | awk '{print $1}' | tail -n +3)
-for pvolume in "${pvols[@]}"; do
+physical_volumes=$(pvs | awk '{print $1}' | tail -n +3)
+for pvolume in "${physical_volumes[@]}"; do
     pvresize $pvolume;
 done
 echo '##### RESIZING PHYSICAL VOLUMES #####'
 
 echo '##### RESIZING LOGICAL VOUMES #####'
-lvols=($(lvs | awk 'NR>=4 { print "/dev/" $2 "/" $1 }'))
-for lvol in "${lvols[@]}"; do
+logical_volumes=($(lvs | awk 'NR>=4 { print "/dev/" $2 "/" $1 }'))
+for lvol in "${logical_volumes[@]}"; do
         lvresize -l +100%FREE $lvol;
 done
 echo '##### RESIZING LOGICAL VOUMES #####'
