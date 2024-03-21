@@ -5,18 +5,20 @@
 ### SECOND ---> RUN THIS SCRIPT
 ### THIS IS A SCRIPT TO DO THE MANUAL OPERATING SYSTEM WORK FOR LVM and FILE SYSTEM TO RECOGNIZE NEW DISK SIZE ### 
 
+#!/bin/bash
+
 ### PVS ### 
 echo "### SHOW PHYSICAL VOLUMES ###"
-pvols=($(pvs | awk '{print $1}' | tail -n +3))
-for pvol in "${pvols[@]}"; do
-    echo "pvol";
+disks=($(pvs | awk '{print $1}' | tail -n +3))
+for disk in "${disks[@]}"; do
+    echo "$disk";
 done
 echo "### SHOW PHYSICAL VOLUMES ###"
 
 echo "### STRIP OFF PHYSICAL VOLUME PARTITION NUMBER 1 W/ SED FOR GROWPART ###"
-pvols=($(pvs | awk '{print $1}' | tail -n +3 | sed 's/.$//'))
-for pvol in "${pvols[@]}"; do
-    echo "$pvol";
+disks=($(pvs | awk '{print $1}' | tail -n +3 | sed 's/.$//'))
+for disk in "${disks[@]}"; do
+    echo "$disk";
 done
 echo "### STRIP OFF DEVICE PARTITION NUMBER 1 W/ SED FOR GROWPART ###"
 
@@ -27,15 +29,15 @@ done
 
 echo '##### RESIZING PHYSICAL VOLUMES #####'
 pvols=$(pvs | awk '{print $1}' | tail -n +3)
-for pvol in "${pvols[@]}"; do
-    pvresize $pvol;
+for pvolume in "${pvols[@]}"; do
+    pvresize $pvolume;
 done
 echo '##### RESIZING PHYSICAL VOLUMES #####'
 
 echo '##### RESIZING LOGICAL VOUMES #####'
-lvols=$(lvs | awk 'NR>=4 { print "/dev/" $2 "/" $1 }')
+lvols=($(lvs | awk 'NR>=4 { print "/dev/" $2 "/" $1 }'))
 for lvol in "${lvols[@]}"; do
-        lvresize -l +100%FREE $lvol
+        lvresize -l +100%FREE $lvol;
 done
 echo '##### RESIZING LOGICAL VOUMES #####'
 
