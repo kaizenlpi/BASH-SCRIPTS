@@ -13,6 +13,8 @@ for volume in "${physical_volumes[@]}"; do
 done
 echo "### SHOW PHYSICAL VOLUMES ###"
 
+echo ###PRINTS BLANK LINE FOR READABILITY IN OUTPUT
+
 echo "### STRIP OFF PHYSICAL VOLUME PARTITION NUMBER 1 W/ SED FOR GROWPART ###"
 physical_volumes=($(pvs | awk '{print $1}' | tail -n +3 | sed 's/.$//'))
 for volume in "${physical_volumes[@]}"; do
@@ -20,35 +22,46 @@ for volume in "${physical_volumes[@]}"; do
 done
 echo "### STRIP OFF DEVICE PARTITION NUMBER 1 W/ SED FOR GROWPART ###"
 
-echo "### GROW PHYSICAL VOLUME PARTITION NUMBER 1 ###"
+echo 
+
+echo "### GROWPART PHYSICAL VOLUME PARTITION NUMBER 1 ###"
 for volume in "${physical_volumes[@]}"; do
     growpart "$volume" 1;
 done
+
+echo
 
 echo '##### RESIZING PHYSICAL VOLUMES #####'
 physical_volumes=$(pvs | awk '{print $1}' | tail -n +3)
 for pvolume in "${physical_volumes[@]}"; do
     pvresize $pvolume;
 done
-echo '##### RESIZING PHYSICAL VOLUMES #####'
+echo '##### RESIZING COMPLETED #####'
+
+echo
 
 echo '##### RESIZING LOGICAL VOUMES #####'
 logical_volumes=($(lvs | awk 'NR>=4 { print "/dev/" $2 "/" $1 }'))
 for lvol in "${logical_volumes[@]}"; do
         lvresize -l +100%FREE $lvol;
 done
-echo '##### RESIZING LOGICAL VOUMES #####'
+echo  '##### RESIZING COMPLETED #####'
+
+echo
 
 # TO DO? CONSIDER PUTTING A TEST TO MAKE SURE THE DIRECTORIES EXIST, IF NOT, CREATE THEM
-echo '##### SHOW CURRENT FILE SIZE OF MOUNTPOINTS #####'
+echo '##### THE OLD DISK SIZES WERE... #####'
 df -h | grep /hana
-echo '##### SHOW CURRENT FILE SIZE OF MOUNTPOINTS #####'
+echo '##### THE OLD DISK SIZES WERE... #####'
+
+echo
 
 echo '##### GROWING FILE SYSTEM #####'
 mount_points=($(df -h | grep hana | awk '{print $6}')) 
 for path in "${mount_points[@]}"; do
         xfs_growfs $path;
-echo '##### SHOW NEW SIZE OF HANA MOUNT POINTS #####'
-df -h | grep /hana
 done
-echo '##### GROWING FILE SYSTEM #####'
+echo
+echo '##### THE NEW DISK SIZES ARE ... #####'
+df -h | grep /hana
+echo '##### THE NEW DISK SIZES ARE ... #####'
