@@ -1,20 +1,22 @@
 #!/bin/bash
-### NOTES: 4 EBS DISKS per EC2 SERVER. 
-### MANUALLY RESIZE THEM VIA AWS CONSOLE or CLI
+### NOTES: 
+### ASSUMPTION: 4 EBS DISKS PER NEW LARGER EC2 REFERENCED INSTANCE (THE EC2 TO MIRROR DISK-WISE)
+### FIRST ---> MANUALLY RESIZE DISKS VIA AWS CONSOLE or CLI
+### SECOND ---> RUN THIS SCRIPT
 ### THIS IS A SCRIPT TO DO THE MANUAL OPERATING SYSTEM WORK FOR LVM and FILE SYSTEM TO RECOGNIZE NEW DISK SIZE ### 
 
 ### PVS ### 
 echo "### SHOW PHYSICAL VOLUMES ###"
-disks=($(pvs | awk '{print $1}' | tail -n +3))
-for disk in "${disks[@]}"; do
-    echo "$disk";
+pvols=($(pvs | awk '{print $1}' | tail -n +3))
+for pvol in "${pvols[@]}"; do
+    echo "pvol";
 done
 echo "### SHOW PHYSICAL VOLUMES ###"
 
 echo "### STRIP OFF PHYSICAL VOLUME PARTITION NUMBER 1 W/ SED FOR GROWPART ###"
-disks=($(pvs | awk '{print $1}' | tail -n +3 | sed 's/.$//'))
-for disk in "${disks[@]}"; do
-    echo "$disk";
+pvols=($(pvs | awk '{print $1}' | tail -n +3 | sed 's/.$//'))
+for pvol in "${pvols[@]}"; do
+    echo "$pvol";
 done
 echo "### STRIP OFF DEVICE PARTITION NUMBER 1 W/ SED FOR GROWPART ###"
 
@@ -25,8 +27,8 @@ done
 
 echo '##### RESIZING PHYSICAL VOLUMES #####'
 pvols=$(pvs | awk '{print $1}' | tail -n +3)
-for pvolume in "${pvols[@]}"; do
-    pvresize $pvolume;
+for pvol in "${pvols[@]}"; do
+    pvresize $pvol;
 done
 echo '##### RESIZING PHYSICAL VOLUMES #####'
 
