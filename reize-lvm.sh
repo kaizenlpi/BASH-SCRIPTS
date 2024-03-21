@@ -1,4 +1,7 @@
 #!/bin/bash
+### NOTES: 4 EBS DISKS per EC2 SERVER. 
+### MANUALLY RESIZE THEM VIA AWS CONSOLE or CLI
+### THIS IS A SCRIPT TO DO THE MANUAL OPERATING SYSTEM WORK FOR LVM and FILE SYSTEM TO RECOGNIZE NEW DISK SIZE ### 
 
 ### PVS ### 
 echo "### SHOW PHYSICAL VOLUMES ###"
@@ -23,12 +26,12 @@ done
 echo '##### RESIZING PHYSICAL VOLUMES #####'
 pvols=$(pvs | awk '{print $1}' | tail -n +3)
 for pvolume in "${pvols[@]}"; do
-    pvresize $pvols;
+    pvresize $pvolume;
 done
 echo '##### RESIZING PHYSICAL VOLUMES #####'
 
 echo '##### RESIZING LOGICAL VOUMES #####'
-lvols=($(lvs | awk 'NR>=4 { print "/dev/" $2 "/" $1 }'))
+lvols=$(lvs | awk 'NR>=4 { print "/dev/" $2 "/" $1 }')
 for lvol in "${lvols[@]}"; do
         lvresize -l +100%FREE $lvol
 done
@@ -42,7 +45,7 @@ echo '##### SHOW CURRENT FILE SIZE OF MOUNTPOINTS #####'
 echo '##### GROWING FILE SYSTEM #####'
 mount_points=($(df -h | grep hana | awk '{print $6}')) 
 for path in "${mount_points[@]}"; do
-        xfs_growfs $mount_points;
+        xfs_growfs $path;
 echo '##### SHOW NEW SIZE OF HANA MOUNT POINTS #####'
 df -h | grep /hana
 done
