@@ -13,7 +13,7 @@ for volume in "${physical_volumes[@]}"; do
 done
 echo "### SHOW PHYSICAL VOLUMES ###"
 
-echo ###PRINTS BLANK LINE FOR READABILITY IN OUTPUT
+echo
 
 echo "### STRIP OFF PHYSICAL VOLUME PARTITION NUMBER 1 W/ SED FOR GROWPART ###"
 physical_volumes=($(pvs | awk '{print $1}' | tail -n +3 | sed 's/.$//'))
